@@ -1,0 +1,8 @@
+name = "api-helper"
+type = "webpack"
+
+account_id = "e933298eadc1cb3ced383f0d701f8ff8"
+workers_dev = true
+route = ""
+zone_id = "near.workers.dev"
+webpack_config = "webpack.config.js"
