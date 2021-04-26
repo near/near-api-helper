@@ -16,8 +16,8 @@ export const handleView = async ({
 	// return encoded url (or redirect to it)
 	if (encodeUrl) {
 		const base64 = fromByteArray(encode({ contract, method, args, actions:{
-            field, botMap, redirect
-        }}));
+			field, botMap, redirect
+		}}));
 		const encodedUrl = url.origin + '/v1/e/' + base64;
 		return new Response(JSON.stringify({ encodedUrl }), { headers: jsonHeaders });
 	}
