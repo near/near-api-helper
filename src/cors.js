@@ -8,6 +8,10 @@ export const corsHeaders = {
     "Access-Control-Max-Age": "86400",
 }
 
+export const jsonHeaders = Object.assign({
+	'content-type': 'application/json',
+}, corsHeaders);
+
 export function handleOptions(request) {
     // Make sure the necessary headers are present
     // for this to be a valid pre-flight request

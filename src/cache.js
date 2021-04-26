@@ -6,20 +6,23 @@ const sha256 = async (message) => {
     return hashHex
 }
 
-export const checkCache = async ({ request, url, responseHeaders }) => {
-    const body = await request.clone().text()
-    const hash = await sha256(body)
-    const cacheUrl = new URL(request.url)
-    cacheUrl.pathname = "/request/" + hash
-    const cacheKey = cacheUrl.toString()
+export const checkCache = async ({ request, url }) => {
+    let { method } = request
+
     const cache = caches.default
+    const body = method === 'POST' && await request.clone().text()
+    const hash = await sha256(url.toString() + body)
+    const cacheUrl = new URL(url.origin)
+    cacheUrl.pathname = '/c/' + hash
+    const cacheKey = cacheUrl.toString()
+
     let cachedResponse = await cache.match(cacheKey)
+
     if (cachedResponse) {
-        cachedResponse = new Response(cachedResponse.body, {
-            headers: responseHeaders,
-        })
-        cachedResponse.headers.append("cached", "true")
-        return {cachedResponse, cacheKey}
+        cachedResponse = new Response(cachedResponse.body)
+        cachedResponse.headers.append('cached', 'true')
+        return { cache, cachedResponse, cacheKey }
     }
+    
     return {cache, cachedResponse: false, cacheKey}
 }

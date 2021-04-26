@@ -16,26 +16,36 @@ export const near = new Near({
 export const account = new Account(near.connection, 'testnet')
 
 /// JS
-export const getNestedField = (obj, path, parse) => {
-	const fields = path.split('.')
+export const getNestedField = (obj, field, parse) => {
+	const path = field.split('.')
 	try {
-		for (let i = 0; i < fields.length; i++) {
-			obj = obj[fields[i]]
+		for (let i = 0; i < path.length; i++) {
+			obj = obj[path[i]]
 		}
-		if (parse === 'parseInt') {
+		if (parse === 'int') {
 			return !!obj ? parseInt(obj) : 0
 		}
-		if (parse === 'BN') {
+		if (parse === 'bn') {
 			return !!obj ? n2f(obj) : n2f('0')
 		}
 		return obj
 	} catch (e) { }
 	// error finding field
-	if (parse === 'parseInt') {
+	if (parse === 'int') {
 		return 0
 	}
-	if (parse === 'BN') {
+	if (parse === 'bn') {
 		return n2f('0')
 	}
 	return obj
+}
+
+// CFW
+
+export const getParamsObj = (params) => {
+	const paramsObj = {}
+    for (let [k, v] of params.entries()) {
+        paramsObj[k] = v
+    }
+	return paramsObj
 }
