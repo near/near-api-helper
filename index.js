@@ -33,7 +33,7 @@ async function handleRequest(event) {
 	const { searchParams, pathname } = url
 	if (pathname === '/favicon.ico') return new Response("")
 	let params = getParamsObj(searchParams)
-	const { cacheMaxAge = '10' } = params
+	const { cacheMaxAge = '30' } = params
 
 	// qualify path and args
 	const pathArgs = pathToArgs(pathname)
