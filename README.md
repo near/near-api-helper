@@ -31,9 +31,14 @@ Returns a raw response for a given view near-api-js call (viewFunction)
 
 
 ```javascript
-const response = await fetch(domainAndPath + 'dev-1618440176640-7650905/nft_token/{"token_id":"token-1619265007329"}').then((res) => res.json())
+const args = JSON.stringify({
+	token_id: 'token-1619265007329'
+});
+const url = testNFTPath + args;
+console.log('\n URL:\n', url, '\n');
+const response = await fetch(url).then((res) => res.json());
 
-assert.strictEqual(Object.keys(response).length > 1, true)
+assert.strictEqual(Object.keys(response).length > 1, true);
 ```
 
 ## It should return just a field with the last field name as key
@@ -43,9 +48,17 @@ Use this to drill into JSON responses (e.g. get metadata for a token)
 
 
 ```javascript
-const response = await fetch(domainAndPath + 'dev-1618440176640-7650905/nft_token/{"token_id":"token-1619265007329"}/{"field":"metadata.media"}').then((res) => res.json())
+const args = JSON.stringify({
+	token_id: 'token-1619265007329'
+});
+const actions = JSON.stringify({
+	field: 'metadata.media'
+});
+const url = testNFTPath + args + '/' + actions;
+console.log('\n URL:\n', url, '\n');
+const response = await fetch(url).then((res) => res.json());
 
-assert.strictEqual(Object.keys(response).length, 1)
+assert.strictEqual(Object.keys(response).length, 1);
 ```
 
 ## It should have a bot response with customized fields
@@ -55,13 +68,26 @@ Creates a bot response for when you share your links (link previews with images 
 
 
 ```javascript
-const response = await fetch(domainAndPath + 'dev-1618440176640-7650905/nft_token/{"token_id":"token-1619265007329"}/{"botMap":{"og:title":"MEOW","og:image":{"field":"metadata.media"}}}', { 
-    headers: {
-        'user-agent': 'facebookexternalhit'
-    }
-}).then((res) => res.text())
+const args = JSON.stringify({
+	token_id: 'token-1619265007329'
+});
+const actions = JSON.stringify({
+	botMap: {
+		'og:title': 'MEOW',
+		'og:image': { field: 'metadata.media' }
+	}
+});
+const url = testNFTPath + args + '/' + actions;
+console.log('\n URL:\n', url, '\n');
+const response = await fetch(url, {
+	headers: {
+		'user-agent': 'facebookexternalhit'
+	}
+}).then((res) => res.text());
 
-assert.strictEqual(response.indexOf('MEOW') > -1, true)
+console.log(response);
+
+assert.strictEqual(response.indexOf('MEOW') > -1, true);
 ```
 
 ## It should return an encoded url
@@ -74,9 +100,27 @@ redirect for users -> NFT item
 
 
 ```javascript
-const response = await fetch(domainAndPath + 'dev-1618440176640-7650905/nft_token/{"token_id":"token-1619265007329"}/{"botMap":{"og:image":{"field":"metadata.media"}},"redirect":"https%3A%2F%2Fnear-apps.github.io%2Fnft-market%2F","encodeUrl":true}').then((res) => res.json())
-        
-assert.strictEqual(Object.keys(response)[0], 'encodedUrl')
+const args = JSON.stringify({
+	token_id: 'token-1619265007329'
+});
+const actions = JSON.stringify({
+	botMap: {
+		'og:title': 'MEOW',
+		'og:image': { field: 'metadata.media' }
+	},
+	redirect: 'https%3A%2F%2Fnear-apps.github.io%2Fnft-market%2F',
+	encodeUrl: true,
+});
+const url = testNFTPath + args + '/' + actions;
+console.log('\n URL:\n', url, '\n');
+const response = await fetch(url).then((res) => res.json());
+assert.strictEqual(Object.keys(response)[0], 'encodedUrl');
+
+// redirect will return html from market which should not contain the string MEOW
+const encodedUrl = Object.values(response)[0];
+console.log('\n URL:\n', encodedUrl, '\n');
+const response2 = await fetch(encodedUrl).then((res) => res.text());
+assert.strictEqual(response2.indexOf('MEOW') === -1, true);
 ```
 
 ## It should return a batched response
@@ -100,42 +144,40 @@ sort.parse: how to treat the field "int": parseInt or "bn": parseFloat(parseNear
 
 
 ```javascript
-this.timeout(5000);
-
 const batch = [{
-    contract: 'dev-1618440176640-7650905',
-    method: 'nft_tokens',
-    args: {},
-    batch: {
-        from_index: '0', // must be name of contract arg (above)
-        limit: '500', // must be name of contract arg (above)
-        step: '100', // divides contract arg 'limit'
-        flatten: [], // how to combine results
-    },
-    sort: {
-        path: 'metadata.issued_at',
-    }
+	contract: 'dev-1618440176640-7650905',
+	method: 'nft_tokens',
+	args: {},
+	batch: {
+		from_index: '0', // must be name of contract arg (above)
+		limit: '500', // must be name of contract arg (above)
+		step: '100', // divides contract arg 'limit'
+		flatten: [], // how to combine results
+	},
+	sort: {
+		path: 'metadata.issued_at',
+	}
 },
 {
-    contract: 'market.dev-1618440176640-7650905',
-    method: 'get_sales_by_nft_contract_id',
-    args: {
-        nft_contract_id: 'dev-1618440176640-7650905'
-    },
-    batch: {
-        from_index: '0', // must be name of contract arg (above)
-        limit: '500', // must be name of contract arg (above)
-        step: '100', // divides contract arg 'limit'
-        flatten: [], // how to combine results
-    },
-    sort: {
-        path: 'conditions.near',
-        parse: 'bn'
-    }
-}]
-const response = await fetch(batchPath + JSON.stringify(batch)).then((res) => res.json())
+	contract: 'market.dev-1618440176640-7650905',
+	method: 'get_sales_by_nft_contract_id',
+	args: {
+		nft_contract_id: 'dev-1618440176640-7650905'
+	},
+	batch: {
+		from_index: '0', // must be name of contract arg (above)
+		limit: '500', // must be name of contract arg (above)
+		step: '100', // divides contract arg 'limit'
+		flatten: [], // how to combine results
+	},
+	sort: {
+		path: 'conditions.near',
+		parse: 'bn'
+	}
+}];
+const response = await fetch(batchPath + JSON.stringify(batch)).then((res) => res.json());
         
-assert.strictEqual(response.length, 2)
-assert.strictEqual(response[0].length > 0, true)
-assert.strictEqual(response[1].length > 0, true)
+assert.strictEqual(response.length, 2);
+assert.strictEqual(response[0].length > 0, true);
+assert.strictEqual(response[1].length > 0, true);
 ```
