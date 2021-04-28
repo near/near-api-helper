@@ -6,7 +6,7 @@ const sha256 = async (message) => {
 	return hashHex;
 };
 
-export const checkCache = async ({ request, url }) => {
+export const checkCache = async ({ request, url, corsHeaders }) => {
 	let { method } = request;
 
 	const cache = caches.default;
@@ -19,7 +19,9 @@ export const checkCache = async ({ request, url }) => {
 	let cachedResponse = await cache.match(cacheKey);
 
 	if (cachedResponse) {
-		cachedResponse = new Response(cachedResponse.body);
+		cachedResponse = new Response(cachedResponse.body, {
+			headers: Object.assign(corsHeaders, cachedResponse.headers)
+		});
 		cachedResponse.headers.append('cached', 'true');
 		return { cache, cachedResponse, cacheKey };
 	}

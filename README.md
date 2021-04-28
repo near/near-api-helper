@@ -22,6 +22,14 @@ http https://helper.nearapi.org/v1/contract/dev-1618440176640-7650905/nft_token/
 ```
 
 # Example calls from client side:
+```js
+// consts
+const domain = 'http://127.0.0.1:8787'; // wrangler dev local testing
+// const domain = 'https://helper.nearapi.org/v1/contract/' // testnet helper domain
+const domainAndPath = domain + '/v1/contract/';
+const testNFTPath = domainAndPath + 'dev-1618440176640-7650905/nft_token/';
+const batchPath = domain + '/v1/batch/';
+```
 
 
 ## It should have the whole rpc response
@@ -175,6 +183,10 @@ const batch = [{
 		parse: 'bn'
 	}
 }];
+
+const url = batchPath + JSON.stringify(batch);
+console.log('\n URL:\n', url, '\n');
+
 const response = await fetch(batchPath + JSON.stringify(batch)).then((res) => res.json());
         
 assert.strictEqual(response.length, 2);

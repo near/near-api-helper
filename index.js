@@ -48,7 +48,7 @@ async function handleRequest(event) {
 	// }
 
 	// // if there's a cached response, serve it
-	const { cache, cachedResponse, cacheKey } = await checkCache({ request, url })
+	const { cache, cachedResponse, cacheKey } = await checkCache({ request, url, corsHeaders })
 	if (cachedResponse) {
 		return cachedResponse
 	}

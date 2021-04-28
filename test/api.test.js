@@ -27,6 +27,14 @@ const batchPath = domain + '/v1/batch/';
  * ```
  * 
  * # Example calls from client side:
+ * ```js
+ * // consts
+ * const domain = 'http://127.0.0.1:8787'; // wrangler dev local testing
+ * // const domain = 'https://helper.nearapi.org/v1/contract/' // testnet helper domain
+ * const domainAndPath = domain + '/v1/contract/';
+ * const testNFTPath = domainAndPath + 'dev-1618440176640-7650905/nft_token/';
+ * const batchPath = domain + '/v1/batch/';
+```
  */
 describe('NEAR API Helper', function () {
 	this.timeout(10000);
@@ -167,6 +175,10 @@ describe('NEAR API Helper', function () {
 				parse: 'bn'
 			}
 		}];
+
+		const url = batchPath + JSON.stringify(batch);
+		console.log('\n URL:\n', url, '\n');
+
 		const response = await fetch(batchPath + JSON.stringify(batch)).then((res) => res.json());
         
 		assert.strictEqual(response.length, 2);
