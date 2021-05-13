@@ -11,7 +11,7 @@ export const handleView = async ({
 	cache, cacheKey, cacheMaxAge,
 }) => {
 	const { contract, method, args, actions } = params;
-	const { field, botMap, redirect, encodeUrl, batch } = actions;
+	const { field, botMap, redirect, encodeUrl } = actions;
 
 	// return encoded url (or redirect to it)
 	if (encodeUrl) {
@@ -23,7 +23,7 @@ export const handleView = async ({
 	}
 
 	// not a bot
-	if (redirect && !/facebookexternalhit|Discordbot|Twitterbot|LinkedInBot|TelegramBot/gi.test(userAgent)) {
+	if (redirect && !/facebookexternalhit|Slackbot|WhatsApp|Snapchat|Applebot|Discordbot|Twitterbot|LinkedInBot|TelegramBot/gi.test(userAgent)) {
 		return Response.redirect(decodeURIComponent(redirect), 301);
 	}
 

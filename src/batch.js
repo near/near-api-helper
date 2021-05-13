@@ -11,6 +11,7 @@ export const handleBatch = async ({
 
 	let { views } = params;
 
+	const allPromises = []
 	views = views.map(({ contract, method, args, batch, sort }) => {
 		const promises = [];
 		if (batch) {
@@ -20,13 +21,15 @@ export const handleBatch = async ({
 			const valInts = vals.map((v) => parseInt(v));
 			for (let i = valInts[0]; i < valInts[1]; i += valInts[2]) {
 				const offset = i.toString();
-				promises.push(account.viewFunction(contract, method, {
+				const promise = account.viewFunction(contract, method, {
 					...args,
 					...{
 						[keys[0]]: offset,
 						[keys[1]]: vals[2],
 					}
-				}));
+				})
+				promises.push(promise);
+				allPromises.push(promise);
 			}
 		}
 		return {
@@ -35,13 +38,15 @@ export const handleBatch = async ({
 			sort,
 		};
 	});
-    
+
+	await Promise.all(allPromises)
+
 	// await all responses
 	for (let i = 0; i < views.length; i++) {
 		const { promises } = views[i];
 		const responses = [];
-		for (let i = 0; i < views.length; i++) {
-			responses.push(await promises[i]);
+		for (let j = 0; j < promises.length; j++) {
+			responses.push(await promises[j]);
 		}
 		delete views[i].promises;
 		views[i].responses = responses;

@@ -28,24 +28,17 @@ async function wrapRequest(event) {
 
 async function handleRequest(event) {
 	const { request } = event
-    const userAgent = request.headers.get('user-agent') || ""
+	const { headers } = request
+    const userAgent = headers.get('user-agent') || ''
+    const cacheMaxAge = headers.get('max-age') || '60'
 	const url = new URL(request.url)
 	const { searchParams, pathname } = url
-	if (pathname === '/favicon.ico') return new Response("")
+	if (pathname === '/favicon.ico') return new Response('')
 	let params = getParamsObj(searchParams)
-	const { cacheMaxAge = '30' } = params
 
 	// qualify path and args
 	const pathArgs = pathToArgs(pathname)
 	Object.assign(params, pathArgs)
-
-	// // unpack encodedUrls here
-	// if (params.p) {
-	// 	params = decode(toByteArray(params.p))
-	
-
-	// 	console.log('decoded', params)
-	// }
 
 	// // if there's a cached response, serve it
 	const { cache, cachedResponse, cacheKey } = await checkCache({ request, url, corsHeaders })

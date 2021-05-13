@@ -150,8 +150,8 @@ describe('NEAR API Helper', function () {
 			args: {},
 			batch: {
 				from_index: '0', // must be name of contract arg (above)
-				limit: '500', // must be name of contract arg (above)
-				step: '100', // divides contract arg 'limit'
+				limit: '200', // must be name of contract arg (above)
+				step: '10', // divides contract arg 'limit'
 				flatten: [], // how to combine results
 			},
 			sort: {
@@ -166,8 +166,8 @@ describe('NEAR API Helper', function () {
 			},
 			batch: {
 				from_index: '0', // must be name of contract arg (above)
-				limit: '500', // must be name of contract arg (above)
-				step: '100', // divides contract arg 'limit'
+				limit: '100', // must be name of contract arg (above)
+				step: '10', // divides contract arg 'limit'
 				flatten: [], // how to combine results
 			},
 			sort: {
@@ -180,9 +180,11 @@ describe('NEAR API Helper', function () {
 		console.log('\n URL:\n', url, '\n');
 
 		const response = await fetch(batchPath + JSON.stringify(batch)).then((res) => res.json());
-        
+
+		console.log(response[0].length)
+
 		assert.strictEqual(response.length, 2);
-		assert.strictEqual(response[0].length > 0, true);
+		assert.strictEqual(response[0].length > 20, true);
 		assert.strictEqual(response[1].length > 0, true);
 	});
 });
