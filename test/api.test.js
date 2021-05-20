@@ -181,10 +181,38 @@ describe('NEAR API Helper', function () {
 
 		const response = await fetch(batchPath + JSON.stringify(batch)).then((res) => res.json());
 
-		console.log(response[0].length)
-
 		assert.strictEqual(response.length, 2);
 		assert.strictEqual(response[0].length > 20, true);
 		assert.strictEqual(response[1].length > 0, true);
+	});
+
+
+	/** 
+     * Mainnet Test
+     */
+	it('should return a batched response', async function() {
+		
+		const batch = [{
+			contract: 'nft_679bada6b8.near-hackathon.collab-land.near',
+			method: 'nft_tokens',
+			args: {},
+			batch: {
+				from_index: '0', // must be name of contract arg (above)
+				limit: '1000', // must be name of contract arg (above)
+				step: '50', // divides contract arg 'limit'
+				flatten: [], // how to combine results
+			},
+		}];
+
+		const url = batchPath + JSON.stringify(batch);
+		console.log('\n URL:\n', url, '\n');
+
+		const response = await fetch(batchPath + JSON.stringify(batch), {
+			headers: {
+				'near-network': 'mainnet'
+			}
+		}).then((res) => res.json());
+
+		assert.strictEqual(response[0].length > 300, true);
 	});
 });

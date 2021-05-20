@@ -1,17 +1,17 @@
 import { 
-	account,
+	accounts,
 	getNestedField
 } from './utils';
 
 export const handleBatch = async ({
 	event, jsonHeaders,
-	cache, cacheKey, cacheMaxAge,
+	cache, cacheKey, cacheMaxAge, networkId,
 	params,
 }) => {
 
 	let { views } = params;
 
-	const allPromises = []
+	const allPromises = [];
 	views = views.map(({ contract, method, args, batch, sort }) => {
 		const promises = [];
 		if (batch) {
@@ -21,13 +21,13 @@ export const handleBatch = async ({
 			const valInts = vals.map((v) => parseInt(v));
 			for (let i = valInts[0]; i < valInts[1]; i += valInts[2]) {
 				const offset = i.toString();
-				const promise = account.viewFunction(contract, method, {
+				const promise = accounts[networkId].viewFunction(contract, method, {
 					...args,
 					...{
 						[keys[0]]: offset,
 						[keys[1]]: vals[2],
 					}
-				})
+				});
 				promises.push(promise);
 				allPromises.push(promise);
 			}
@@ -39,7 +39,7 @@ export const handleBatch = async ({
 		};
 	});
 
-	await Promise.all(allPromises)
+	await Promise.all(allPromises);
 
 	// await all responses
 	for (let i = 0; i < views.length; i++) {

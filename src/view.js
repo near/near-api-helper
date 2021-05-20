@@ -1,5 +1,5 @@
 import { 
-	account,
+	accounts,
 	getNestedField,
 } from './utils';
 
@@ -8,7 +8,7 @@ import { fromByteArray } from 'base64-js';
 
 export const handleView = async ({
 	event, url, params, corsHeaders, jsonHeaders, userAgent,
-	cache, cacheKey, cacheMaxAge,
+	cache, cacheKey, cacheMaxAge, networkId
 }) => {
 	const { contract, method, args, actions } = params;
 	const { field, botMap, redirect, encodeUrl } = actions;
@@ -28,7 +28,7 @@ export const handleView = async ({
 	}
 
 	// get raw rpc response
-	let rpcResponse = await account.viewFunction(contract, method, args);
+	let rpcResponse = await accounts[networkId].viewFunction(contract, method, args);
 
 	// get specified field
 	if (field) {

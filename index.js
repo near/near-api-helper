@@ -31,6 +31,8 @@ async function handleRequest(event) {
 	const { headers } = request
     const userAgent = headers.get('user-agent') || ''
     const cacheMaxAge = headers.get('max-age') || '60'
+    const networkId = headers.get('near-network') || 'testnet'
+	console.log(networkId)
 	const url = new URL(request.url)
 	const { searchParams, pathname } = url
 	if (pathname === '/favicon.ico') return new Response('')
@@ -49,7 +51,7 @@ async function handleRequest(event) {
 	const methodArgs = {
 		event, request, url, params, userAgent,
 		jsonHeaders, corsHeaders,
-		cache, cacheKey, cacheMaxAge,
+		cache, cacheKey, cacheMaxAge, networkId,
 	}
 
 	switch (request.method) {

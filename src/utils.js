@@ -5,15 +5,25 @@ import {
 const { format: { parseNearAmount } } = utils;
 const n2f = (amount) => parseFloat(parseNearAmount(amount, 8));
 
-/// NEAR
-export const near = new Near({
+export const accounts = {};
+const nearTestnet = new Near({
 	networkId: 'default',
 	nodeUrl: 'https://rpc.testnet.near.org',
 	deps: {
 		keyStore: new keyStores.InMemoryKeyStore()
 	},
 });
-export const account = new Account(near.connection, 'testnet');
+accounts.testnet = new Account(nearTestnet.connection, 'testnet');
+
+const nearMainnet = new Near({
+	networkId: 'default',
+	nodeUrl: 'https://rpc.mainnet.near.org',
+	deps: {
+		keyStore: new keyStores.InMemoryKeyStore()
+	},
+});
+accounts.mainnet = new Account(nearMainnet.connection, 'near');
+
 
 /// JS
 export const getNestedField = (obj, field, parse) => {
