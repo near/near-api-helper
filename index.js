@@ -60,7 +60,11 @@ async function handleRequest(event) {
 				return await handleView(methodArgs)
 			}
 			return await handleBatch(methodArgs)
-		break;
+		case 'POST': 
+			if (params.batch) {
+				params.views = await request.json()
+				return await handleBatch(methodArgs)
+			}
 	}
 
 }

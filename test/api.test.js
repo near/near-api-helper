@@ -179,11 +179,63 @@ describe('NEAR API Helper', function () {
 		const url = batchPath + JSON.stringify(batch);
 		console.log('\n URL:\n', url, '\n');
 
-		const response = await fetch(batchPath + JSON.stringify(batch)).then((res) => res.json());
+		const response = await fetch(url).then((res) => res.json());
 
 		assert.strictEqual(response.length, 2);
 		assert.strictEqual(response[0].length > 20, true);
 		assert.strictEqual(response[1].length > 0, true);
+	});
+
+	it('should process a batch of input (token_ids) sent via POST', async function() {
+
+		const batch = [{
+			contract: 'dev-1618440176640-7650905',
+			method: 'nft_tokens',
+			args: {},
+			batch: {
+				from_index: '0', // must be name of contract arg (above)
+				limit: '200', // must be name of contract arg (above)
+				step: '10', // divides contract arg 'limit'
+				flatten: [], // how to combine results
+			},
+			sort: {
+				path: 'metadata.issued_at',
+			}
+		}];
+
+		const url = batchPath + JSON.stringify(batch);
+		console.log('\n URL:\n', url, '\n');
+		const response = await fetch(url).then((res) => res.json());
+
+		const token_ids = response[0].map(({ token_id }) => token_id)
+
+		const batch2 = [{
+			contract: 'dev-1618440176640-7650905',
+			method: 'nft_tokens_batch',
+			args: {
+				token_ids
+			},
+			batch: {
+				from_index: '0',
+				limit: '2000',
+				step: '50', // divides batch above
+				flatten: [],
+			},
+			sort: {
+				path: 'metadata.issued_at',
+			}
+		}];
+
+		// use POST - token_ids array too large for GET url
+		const url2 = batchPath + JSON.stringify({});
+		console.log('\n URL:\n', url2, '\n');
+		const response2 = await fetch(url2, {
+			method: 'POST',
+			body: JSON.stringify(batch2)
+		}).then((res) => res.json());
+
+		assert.strictEqual(response2.length, 1);
+		assert.strictEqual(response2[0].length > 20, true);
 	});
 
 
@@ -207,7 +259,7 @@ describe('NEAR API Helper', function () {
 		const url = batchPath + JSON.stringify(batch);
 		console.log('\n URL:\n', url, '\n');
 
-		const response = await fetch(batchPath + JSON.stringify(batch), {
+		const response = await fetch(url, {
 			headers: {
 				'near-network': 'mainnet'
 			}
