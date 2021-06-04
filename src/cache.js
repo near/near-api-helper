@@ -6,15 +6,19 @@ const sha256 = async (message) => {
 	return hashHex;
 };
 
-export const checkCache = async ({ request, url, corsHeaders }) => {
+export const checkCache = async ({ request, params, url, corsHeaders, cacheMaxAge }) => {
 	let { method } = request;
 
 	const cache = caches.default;
-	const body = method === 'POST' && await request.clone().text();
+	const body = method === 'POST' && params.type !== 'upload' && await request.clone().text();
 	const hash = await sha256(url.toString() + body);
 	const cacheUrl = new URL(url.origin);
 	cacheUrl.pathname = '/c/' + hash;
 	const cacheKey = cacheUrl.toString();
+
+	if (cacheMaxAge === '0') {
+		return {cache, cacheKey, cachedResponse: false };
+	}
 
 	let cachedResponse = await cache.match(cacheKey);
 
@@ -26,5 +30,5 @@ export const checkCache = async ({ request, url, corsHeaders }) => {
 		return { cache, cachedResponse, cacheKey };
 	}
     
-	return {cache, cachedResponse: false, cacheKey};
+	return {cache, cacheKey, cachedResponse: false };
 };

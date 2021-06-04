@@ -21,6 +21,7 @@ export const handleBatch = async ({
 				const argKey = Object.keys(args)[0]
 				// assume batch obj is { from_index, limit, step, flatten }
 				const valInts = Object.values(batch).map((v) => parseInt(v));
+				valInts[1] = Math.min(valInts[1], ids.length)
 				for (let i = valInts[0]; i < valInts[1]; i += valInts[2]) {
 					const promise = accounts[networkId].viewFunction(contract, method, {
 						[argKey]: ids.slice(i, i + valInts[2]),

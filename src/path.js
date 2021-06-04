@@ -6,6 +6,30 @@ import { toByteArray } from 'base64-js';
 export const pathToArgs = (pathname) => {
 	const path = pathname.split('/');
 
+	// console.log('\n\n\npath\n\n\n', path, '\n\n\n')
+
+	// upload or share url path
+	if (path[1] === 'v1' && (path[2] === 'upload' || path[2] === 'share')) {
+		let args = path[3];
+		try {
+			args = JSON.parse(decodeURIComponent(args));
+		} catch (e) {
+			throw 'unable to parse args /v1/upload/[args]';
+		}
+		return { type: path[2], ...args };
+	}
+
+	// redirect path (url args encoded)
+	if (path[1] === 'v1' && path[2] === 'r') {
+		let decoded = path[3];
+		try {
+			decoded = decode(toByteArray(decoded));
+		} catch (e) {
+			throw 'unable to parse args /v1/upload/[args]';
+		}
+		return { type: 'redirect', ...decoded };
+	}
+
 	// encoded path
 	if (path[1] === 'v1' && path[2] === 'e') {
 		let decoded = path[3];
@@ -14,20 +38,18 @@ export const pathToArgs = (pathname) => {
 		} catch (e) {
 			throw 'unable to decode url';
 		}
-		console.log('\n\n DECODED ', decoded, '\n\n');
-		return decoded;
+		return { type: 'view', ...decoded };
 	}
 
 	// batch path
-	let args;
 	if (path[1] === 'v1' && path[2] === 'batch') {
-		args = path[3];
+		let views = path[3];
 		try {
-			args = JSON.parse(decodeURIComponent(args));
+			views = JSON.parse(decodeURIComponent(views));
 		} catch (e) {
 			throw 'unable to parse batch args /v1/batch/[args]';
 		}
-		return { batch: true, views: args };
+		return { type: 'batch', views };
 	}
 
 	// contract path
@@ -39,7 +61,7 @@ export const pathToArgs = (pathname) => {
 	const method = path[4];
 	if (!method) throw 'missing /v1/contract/[contractName]/[methodName]';
 
-	args = path[5] || {};
+	let args = path[5] || {};
 	if (!!args.length) {
 		try {
 			args = JSON.parse(decodeURIComponent(args));
@@ -58,6 +80,6 @@ export const pathToArgs = (pathname) => {
 	}
 
 	return {
-		contract, method, args, actions
+		type: 'view', contract, method, args, actions
 	};
 };

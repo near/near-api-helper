@@ -5,7 +5,7 @@
 	"description": "A template for kick starting a Cloudflare Workers project",
 	"main": "index.js",
 	"scripts": {
-        "fix": "eslint src/ test/ --fix",
+		"fix": "eslint src/ test/ --fix",
 		"doc": "acquit-markdown -p ./test/api.test.js > README.md",
 		"test": "mocha",
 		"format": "prettier --write '**/*.{js,css,json,md}'"
@@ -13,9 +13,9 @@
 	"author": "mattlockyer <mattdlockyer@gmail.com>",
 	"license": "MIT",
 	"devDependencies": {
-        "eslint": "^7.14.0",
 		"acquit": "^1.2.1",
 		"acquit-markdown": "^0.1.0",
+		"eslint": "^7.14.0",
 		"mocha": "^8.3.2",
 		"node-fetch": "^2.6.1",
 		"prettier": "^1.18.2"
@@ -23,6 +23,8 @@
 	"dependencies": {
 		"@msgpack/msgpack": "^2.6.0",
 		"base64-js": "^1.5.1",
-		"near-api-js": "^0.39.0"
+		"bs58": "^4.0.1",
+		"near-api-js": "^0.41.0",
+		"tweetnacl": "^1.0.3"
 	}
 }

@@ -1,11 +1,14 @@
 const assert = require('assert');
 const fetch = require("node-fetch");
+const { account, getSignature } = require("./near-utils");
 // consts
 const domain = 'http://127.0.0.1:8787';
 // const domain = 'https://helper.nearapi.org/v1/contract/'
 const domainAndPath = domain + '/v1/contract/';
 const testNFTPath = domainAndPath + 'dev-1618440176640-7650905/nft_token/';
 const batchPath = domain + '/v1/batch/';
+const uploadPath = domain + '/v1/upload/';
+const sharePath = domain + '/v1/share/';
 
 /** 
  * Batch near-api-js RPC calls.
@@ -38,6 +41,80 @@ const batchPath = domain + '/v1/batch/';
  */
 describe('NEAR API Helper', function () {
 	this.timeout(10000);
+
+	/** 
+     * Using backblaze as image store (S3 style service) and then caching that image for link previews
+     */
+	it('should upload an image if account owns NFT', async function() {
+		// account is NFT owner in contractId and owns the nft in tokenId
+		const signature = await getSignature(account)
+		const { contractId, tokenId } = account
+		const nft = { contractId, tokenId }
+		
+		const url = uploadPath + JSON.stringify({
+			nft,
+			redirect: "https%3A%2F%2Fmobile.twitter.com%2Fhome"
+		});
+		console.log('\n URL:\n', url, '\n');
+
+		const response = await fetch(url, {
+			headers: {
+				'near-signature': JSON.stringify(signature),
+			},
+			method: 'POST',
+			body: 'test'
+		}).then((res) => res.json());
+
+		// console.log(response)
+
+		assert.strictEqual(!!response.encodedUrl, true);
+		
+		const response2 = await fetch(response.encodedUrl, {
+			headers: {
+				'user-agent': 'facebookexternalhit'
+			}
+		}).then((res) => res.text());
+
+		// console.log(response2)
+
+		assert.strictEqual(response2.indexOf(response.fn) > -1, true);
+	});
+
+	/** 
+     * Get the share link only using fn -> uploaded image url and bot response
+     */
+	 it('should get a share link and check the bot response', async function() {
+		// account is NFT owner in contractId and owns the nft in tokenId
+		const { contractId, tokenId } = account
+		const nft = { contractId, tokenId }
+		
+		const title = 'hello world!'
+		const url = sharePath + JSON.stringify({
+			title,
+			description: 'this is a test',
+			nft,
+			redirect: "https%3A%2F%2Fmobile.twitter.com%2Fhome"
+		});
+		console.log('\n URL:\n', url, '\n');
+
+		const response = await fetch(url).then((res) => res.json());
+
+		// console.log(response)
+
+		assert.strictEqual(!!response.encodedUrl, true);
+		
+		const response2 = await fetch(response.encodedUrl, {
+			headers: {
+				'user-agent': 'facebookexternalhit'
+			}
+		}).then((res) => res.text());
+
+		// console.log(response2)
+
+		assert.strictEqual(response2.indexOf(response.fn) > -1, true);
+		assert.strictEqual(response2.indexOf(title) > -1, true);
+	});
+
 	/** 
      * Returns a raw response for a given view near-api-js call (viewFunction)
      */
@@ -186,6 +263,16 @@ describe('NEAR API Helper', function () {
 		assert.strictEqual(response[1].length > 0, true);
 	});
 
+
+	/** 
+     * Use this to split a call that requires sending an array of ids to a view method.
+     * 
+     * The array of ids will be automatically split up into separate RPC calls and the results will be flattened back together.
+     * 
+     * WIP
+     * sort.field: what field on the objects to use for sorting
+     * sort.parse: how to treat the field "int": parseInt or "bn": parseFloat(parseNearAmount(val, 8)) // 8 decimal approximation of NEAR
+     */
 	it('should process a batch of input (token_ids) sent via POST', async function() {
 
 		const batch = [{
@@ -267,4 +354,5 @@ describe('NEAR API Helper', function () {
 
 		assert.strictEqual(response[0].length > 300, true);
 	});
+	
 });
