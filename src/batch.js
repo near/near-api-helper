@@ -40,7 +40,7 @@ export const handleBatch = async ({
 						...args,
 						...{
 							[keys[0]]: offset,
-							[keys[1]]: vals[2],
+							[keys[1]]: Math.min(valInts[1] - i, valInts[2]),
 						}
 					});
 					promises.push(promise);

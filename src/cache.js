@@ -22,7 +22,7 @@ export const checkCache = async ({ request, params, url, corsHeaders, cacheMaxAg
 
 	let cachedResponse = await cache.match(cacheKey);
 
-	if (cachedResponse) {
+	if (!params.skipcache && cachedResponse) {
 		cachedResponse = new Response(cachedResponse.body, {
 			headers: Object.assign(corsHeaders, cachedResponse.headers)
 		});

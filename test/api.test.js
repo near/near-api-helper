@@ -1,11 +1,14 @@
 const assert = require('assert');
 const fetch = require("node-fetch");
 const { account, getSignature } = require("./near-utils");
+
+const contractId = 'dev-1623990723679-78605620599599'
+const tokenId = 'HipHopHead.10.143.11151512:1'
 // consts
 const domain = 'http://127.0.0.1:8787';
 // const domain = 'https://helper.nearapi.org/v1/contract/'
 const domainAndPath = domain + '/v1/contract/';
-const testNFTPath = domainAndPath + 'dev-1618440176640-7650905/nft_token/';
+const testNFTPath = domainAndPath + contractId + '/nft_token/';
 const batchPath = domain + '/v1/batch/';
 const uploadPath = domain + '/v1/upload/';
 const sharePath = domain + '/v1/share/';
@@ -120,7 +123,7 @@ describe('NEAR API Helper', function () {
      */
 	it('should have the whole rpc response', async function() {  
 		const args = JSON.stringify({
-			token_id: 'token-1619265007329'
+			token_id: tokenId
 		});
 		const url = testNFTPath + args;
 		console.log('\n URL:\n', url, '\n');
@@ -134,7 +137,7 @@ describe('NEAR API Helper', function () {
      */
 	it('should return just a field with the last field name as key', async function() {  
 		const args = JSON.stringify({
-			token_id: 'token-1619265007329'
+			token_id: tokenId
 		});
 		const actions = JSON.stringify({
 			field: 'metadata.media'
@@ -151,7 +154,7 @@ describe('NEAR API Helper', function () {
      */
 	it('should have a bot response with customized fields', async function() {  
 		const args = JSON.stringify({
-			token_id: 'token-1619265007329'
+			token_id: tokenId
 		});
 		const actions = JSON.stringify({
 			botMap: {
@@ -180,7 +183,7 @@ describe('NEAR API Helper', function () {
      */
 	it('should return an encoded url', async function() {
 		const args = JSON.stringify({
-			token_id: 'token-1619265007329'
+			token_id: tokenId
 		});
 		const actions = JSON.stringify({
 			botMap: {
@@ -222,7 +225,7 @@ describe('NEAR API Helper', function () {
 	it('should return a batched response', async function() {
 
 		const batch = [{
-			contract: 'dev-1618440176640-7650905',
+			contract: contractId,
 			method: 'nft_tokens',
 			args: {},
 			batch: {
@@ -236,10 +239,10 @@ describe('NEAR API Helper', function () {
 			}
 		},
 		{
-			contract: 'market.dev-1618440176640-7650905',
+			contract: 'market.' + contractId,
 			method: 'get_sales_by_nft_contract_id',
 			args: {
-				nft_contract_id: 'dev-1618440176640-7650905'
+				nft_contract_id: contractId
 			},
 			batch: {
 				from_index: '0', // must be name of contract arg (above)
@@ -276,7 +279,7 @@ describe('NEAR API Helper', function () {
 	it('should process a batch of input (token_ids) sent via POST', async function() {
 
 		const batch = [{
-			contract: 'dev-1618440176640-7650905',
+			contract: contractId,
 			method: 'nft_tokens',
 			args: {},
 			batch: {
@@ -297,7 +300,7 @@ describe('NEAR API Helper', function () {
 		const token_ids = response[0].map(({ token_id }) => token_id)
 
 		const batch2 = [{
-			contract: 'dev-1618440176640-7650905',
+			contract: contractId,
 			method: 'nft_tokens_batch',
 			args: {
 				token_ids
@@ -329,30 +332,30 @@ describe('NEAR API Helper', function () {
 	/** 
      * Mainnet Test
      */
-	it('should return a batched response', async function() {
+	// it('should return a batched response', async function() {
 		
-		const batch = [{
-			contract: 'nft_679bada6b8.near-hackathon.collab-land.near',
-			method: 'nft_tokens',
-			args: {},
-			batch: {
-				from_index: '0', // must be name of contract arg (above)
-				limit: '1000', // must be name of contract arg (above)
-				step: '50', // divides contract arg 'limit'
-				flatten: [], // how to combine results
-			},
-		}];
+	// 	const batch = [{
+	// 		contract: 'nft_679bada6b8.near-hackathon.collab-land.near',
+	// 		method: 'nft_tokens',
+	// 		args: {},
+	// 		batch: {
+	// 			from_index: '0', // must be name of contract arg (above)
+	// 			limit: '1000', // must be name of contract arg (above)
+	// 			step: '50', // divides contract arg 'limit'
+	// 			flatten: [], // how to combine results
+	// 		},
+	// 	}];
 
-		const url = batchPath + JSON.stringify(batch);
-		console.log('\n URL:\n', url, '\n');
+	// 	const url = batchPath + JSON.stringify(batch);
+	// 	console.log('\n URL:\n', url, '\n');
 
-		const response = await fetch(url, {
-			headers: {
-				'near-network': 'mainnet'
-			}
-		}).then((res) => res.json());
+	// 	const response = await fetch(url, {
+	// 		headers: {
+	// 			'near-network': 'mainnet'
+	// 		}
+	// 	}).then((res) => res.json());
 
-		assert.strictEqual(response[0].length > 300, true);
-	});
+	// 	assert.strictEqual(response[0].length > 300, true);
+	// });
 	
 });

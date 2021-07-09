@@ -21,7 +21,7 @@ export const handleUpload = async ({
 
     nftOwner(networkId, signature, nft)
 
-    const fn = contractId + DELIMETER + tokenId + '.png'
+    const fn = encodeURIComponent(contractId + DELIMETER + tokenId + '.png')
     const body = await request.arrayBuffer()
     const b2upload = uploadB2({
         event,
@@ -41,11 +41,11 @@ export const handleShare = async ({
  }) => {
     const {
         nft: { contractId, tokenId },
-        redirect = FILE_HOST + fn,
+        redirect,
         title = '',
         description = ''
     } = params
-    const fn = contractId + DELIMETER + tokenId + '.png'
+    const fn = encodeURIComponent(contractId + DELIMETER + tokenId + '.png')
 	const base64 = fromByteArray(encode({ redirect, fn, title, description }));
     // const encodedUrl = 'http://127.0.0.1:8787/v1/r/' + base64;
     const encodedUrl = url.origin + '/v1/r/' + base64;

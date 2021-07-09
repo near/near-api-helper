@@ -14,7 +14,7 @@ export const pathToArgs = (pathname) => {
 		try {
 			args = JSON.parse(decodeURIComponent(args));
 		} catch (e) {
-			throw 'unable to parse args /v1/upload/[args]';
+			throw 'unable to parse args /v1/' + path[2] + '/[args]';
 		}
 		return { type: path[2], ...args };
 	}
