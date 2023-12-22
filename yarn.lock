@@ -38,10 +38,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@msgpack/msgpack@^2.6.0":
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/@msgpack/msgpack/-/msgpack-2.6.0.tgz#13da10210578286e1c05520fb31b22170339f37f"
-  integrity sha512-CbKEhARMPl/CYNhIs4p0NgoNWspUQP45QxZoJ433ydSd2HTfzQ4WQyEpViJkEHKkRcPbV72FlFf3gtD9frzKTg==
+"@msgpack/msgpack@^2.8.0":
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@msgpack/msgpack/-/msgpack-2.8.0.tgz#4210deb771ee3912964f14a15ddfb5ff877e70b9"
+  integrity sha512-h9u4u/jiIRKbq25PM+zymTyW6bhTzELvOoUd+AvYriWOAKpLGnIamaET3pnHYoI5iYphAHBI4ayx0MehR+VVPQ==
 
 "@types/bn.js@^4.11.5":
   version "4.11.6"
